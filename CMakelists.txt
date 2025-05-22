@@ -1,0 +1,62 @@
+cmake_minimum_required(VERSION 3.20)
+project(Render)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# 统一输出目录
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+# 预编译的GLFW配置
+set(GLFW_IMPLIB "${CMAKE_CURRENT_SOURCE_DIR}/third/glfw/so/libglfw3dll.a")
+set(GLFW_DLL "${CMAKE_CURRENT_SOURCE_DIR}/third/glfw/so/glfw3.dll")
+
+add_library(glfw3_dll SHARED IMPORTED)
+set_target_properties(glfw3_dll PROPERTIES
+    IMPORTED_IMPLIB "${GLFW_IMPLIB}"
+    IMPORTED_LOCATION "${GLFW_DLL}"
+)
+
+target_include_directories(glfw3_dll INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}/third/glfw/include
+)
+# 预编译的assimp配置
+set(assimp_IMPLIB "${CMAKE_CURRENT_SOURCE_DIR}/third/assimp/so/libassimp.dll.a")
+set(assimp_DLL "${CMAKE_CURRENT_SOURCE_DIR}/third/assimp/so/libassimp-5.dll")
+add_library(assimp_dll SHARED IMPORTED)
+set_target_properties(assimp_dll PROPERTIES
+    IMPORTED_IMPLIB "${assimp_IMPLIB}"
+    IMPORTED_LOCATION "${assimp_DLL}"
+)
+target_include_directories(assimp_dll INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}/third/assimp/include
+)
+# 包含第三方库
+add_subdirectory(third/Glad)
+add_subdirectory(third/imgui)
+
+
+# 主程序
+aux_source_directory(./src SOURCES)
+add_executable(app ${SOURCES})
+
+target_include_directories(app PRIVATE
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/third/glm
+)
+
+target_link_libraries(app PRIVATE gladdll glfw3_dll imguidll assimp_dll)
+
+file(COPY ${CMAKE_SOURCE_DIR}/res/texture DESTINATION ${CMAKE_BINARY_DIR}/bin)
+
+add_custom_command(TARGET app POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+        "${GLFW_DLL}"
+        $<TARGET_FILE_DIR:app>
+)
+add_custom_command(TARGET app POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+        "${assimp_DLL}"
+        $<TARGET_FILE_DIR:app>
+)

@@ -1,0 +1,7 @@
+file(GLOB gladsrc src/glad.c)
+
+add_library(gladdll SHARED ${gladsrc} )
+
+target_include_directories(gladdll PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)

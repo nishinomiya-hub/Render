@@ -1,0 +1,8 @@
+file(GLOB imguisrc src/*.cpp)
+
+add_library(imguidll SHARED ${imguisrc} )
+
+target_include_directories(imguidll PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
+target_link_libraries(imguidll PUBLIC glfw3_dll)

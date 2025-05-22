@@ -4,54 +4,54 @@ void Material::Apply(Shader &shader) const
 {
     shader.Bind();
     // 颜色属性
-    shader.SetUniformVec3("material.diffuseColor", diffuseColor);
-    shader.SetUniformVec3("material.specularColor", specularColor);
-    shader.SetUniform1f("material.shininess", shininess);
+    shader.SetUniformVec3("materialdiffuseColor", diffuseColor);
+    shader.SetUniformVec3("materialspecularColor", specularColor);
+    shader.SetUniform1f("materialshininess", shininess);
 
     int texUnit = 0;
 
     if (diffuseMap) {
 
         diffuseMap-> Bind(texUnit);
-        shader.SetUniform1i("material.diffuseMap", texUnit++);
-        shader.setUniformBool("material.hasDiffuseMap", true);
+        shader.SetUniform1i("materialdiffuseMap", texUnit++);
+        shader.setUniformBool("materialhasDiffuseMap", true);
     } else {
-        shader.setUniformBool("material.hasDiffuseMap", false);
+        shader.setUniformBool("materialhasDiffuseMap", false);
     }
 
     if (specularMap) {
 
         specularMap-> Bind(texUnit);
-        shader.SetUniform1i("material.specularMap", texUnit++);
-        shader.setUniformBool("material.hasSpecularMap", true);
+        shader.SetUniform1i("materialspecularMap", texUnit++);
+        shader.setUniformBool("materialhasSpecularMap", true);
     } else {
-        shader.setUniformBool("material.hasSpecularMap", false);
+        shader.setUniformBool("materialhasSpecularMap", false);
     }
 
     if (normalMap) {
 
         normalMap-> Bind(texUnit);
-        shader.SetUniform1i("material.normalMap", texUnit++);
-        shader.setUniformBool("material.hasNormalMap", true);
+        shader.SetUniform1i("materialnormalMap", texUnit++);
+        shader.setUniformBool("materialhasNormalMap", true);
     } else {
-        shader.setUniformBool("material.hasNormalMap", false);
+        shader.setUniformBool("materialhasNormalMap", false);
     }
 
     if (opacityMap) {
 
         opacityMap-> Bind(texUnit);
-        shader.SetUniform1i("material.opacityMap", texUnit++);
-        shader.setUniformBool("material.hasOpacityMap", true);
+        shader.SetUniform1i("materialopacityMap", texUnit++);
+        shader.setUniformBool("materialhasOpacityMap", true);
     } else {
-        shader.setUniformBool("material.hasOpacityMap", false);
+        shader.setUniformBool("materialhasOpacityMap", false);
     }
 
     if (emissiveMap) {
 
         emissiveMap-> Bind(texUnit);
-        shader.SetUniform1i("material.emissiveMap", texUnit++);
-        shader.setUniformBool("material.hasEmissiveMap", true);
+        shader.SetUniform1i("materialemissiveMap", texUnit++);
+        shader.setUniformBool("materialhasEmissiveMap", true);
     } else {
-        shader.setUniformBool("material.hasEmissiveMap", false);
+        shader.setUniformBool("materialhasEmissiveMap", false);
     }
 }

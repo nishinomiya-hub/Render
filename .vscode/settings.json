@@ -1,5 +1,11 @@
 {
     "files.associations": {
-        "cstring": "cpp"
-    }
+        "cstring": "cpp",
+        "fstream": "cpp"
+    },
+    "cmake.cmakePath": "/usr/bin/cmake",
+    "cmake.configureOnOpen": true,
+    "cmake.generator": "Unix Makefiles",
+    "C_Cpp.default.intelliSenseMode": "linux-gcc-x64"
+
 }

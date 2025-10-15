@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project(Render)
 
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 set(TARGET_NAME Render)
 #set(THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/third_party")
@@ -15,6 +15,18 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_definitions("-DDEBUG")
 endif ()
 
+
+# 包含 FetchContent 模块
+include(FetchContent)
+
+# 下载并配置 Google Test
+FetchContent_Declare(
+  googletest
+  GIT_REPOSITORY https://github.com/google/googletest.git
+  GIT_TAG main
+)
+FetchContent_MakeAvailable(googletest)
+
 # find_program(CCACHE "ccache")
 # if (CCACHE)
 #     message(STATUS "find ccache")
@@ -22,22 +34,22 @@ endif ()
 #     set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE})
 # endif (CCACHE)
 
-# include_directories(
-#         "${THIRD_PARTY_DIR}/glfw/include"
-#         "${THIRD_PARTY_DIR}/glad/include"
-#         "${THIRD_PARTY_DIR}/glm"
-#         "${THIRD_PARTY_DIR}/assimp/include"
-#         "${THIRD_PARTY_DIR}/assimp/contrib"
-#         "${THIRD_PARTY_DIR}/imgui"
-#         "${THIRD_PARTY_DIR}/json11"
-#         "${THIRD_PARTY_DIR}/md5"
-#         "${THIRD_PARTY_DIR}/stb/include"
-#         "${THIRD_PARTY_DIR}/vulkan/include"
-#         "${THIRD_PARTY_DIR}/glslang"
-#         "${THIRD_PARTY_DIR}/vma"
-#         "${THIRD_PARTY_DIR}/renderdoc"
-#         "${CMAKE_CURRENT_SOURCE_DIR}/src"
-# )
+include_directories(
+        # "${THIRD_PARTY_DIR}/glfw/include"
+        # "${THIRD_PARTY_DIR}/glad/include"
+        # "${THIRD_PARTY_DIR}/glm"
+        # "${THIRD_PARTY_DIR}/assimp/include"
+        # "${THIRD_PARTY_DIR}/assimp/contrib"
+        # "${THIRD_PARTY_DIR}/imgui"
+        # "${THIRD_PARTY_DIR}/json11"
+        # "${THIRD_PARTY_DIR}/md5"
+        # "${THIRD_PARTY_DIR}/stb/include"
+        # "${THIRD_PARTY_DIR}/vulkan/include"
+        # "${THIRD_PARTY_DIR}/glslang"
+        # "${THIRD_PARTY_DIR}/vma"
+        # "${THIRD_PARTY_DIR}/renderdoc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src"
+)
 
 # # assimp
 # set(BUILD_SHARED_LIBS OFF)
@@ -72,7 +84,7 @@ file(GLOB SOFTGL_SRC
         # ${CMAKE_CURRENT_SOURCE_DIR}/src/Render/OpenGL/*.cpp
         # ${CMAKE_CURRENT_SOURCE_DIR}/src/Render/Vulkan/*.cpp
         # ${CMAKE_CURRENT_SOURCE_DIR}/src/Render/Vulkan/SPIRV/*.cpp
-        # ${CMAKE_CURRENT_SOURCE_DIR}/src/Viewer/*.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Context/*.cpp
         # ${CMAKE_CURRENT_SOURCE_DIR}/src/Viewer/Shader/GLSL/*.cpp
         # ${CMAKE_CURRENT_SOURCE_DIR}/src/Viewer/Shader/Software/*.cpp
         )
@@ -81,6 +93,14 @@ file(GLOB SOFTGL_SRC
 # file(GLOB IMGUI_SRC
 #         ${THIRD_PARTY_DIR}/imgui/imgui/*.cpp
 #         )
+
+# 收集测试源文件
+file(GLOB TEST_SOURCES
+    tests/*.cpp
+    # 添加其他测试文件
+)
+
+add_library(RenderLib STATIC ${SOFTGL_SRC})
 
 add_executable(${TARGET_NAME}
         "${SOFTGL_SRC}"
@@ -91,10 +111,10 @@ add_executable(${TARGET_NAME}
         )
 
 # set(LINK_LIBS
-#         assimp
-#         glslang
-#         glslang-default-resource-limits
-#         SPIRV
+#         #assimp
+#         #glslang
+#         # glslang-default-resource-limits
+#         # SPIRV
 #         )
 
 # if (WIN32)
@@ -135,15 +155,32 @@ add_executable(${TARGET_NAME}
 # endif ()
 
 if (MSVC)
-    target_compile_options(${TARGET_NAME} PRIVATE $<$<BOOL:${MSVC}>:/arch:AVX2 /std:c++11>)
+    target_compile_options(${TARGET_NAME} PRIVATE $<$<BOOL:${MSVC}>:/arch:AVX2 /std:c++17>)
 else ()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mavx2 -mfma -O3")
 endif ()
 
 #target_link_libraries(${TARGET_NAME} ${LINK_LIBS})
 
-# # output dir
-# set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+target_include_directories(RenderLib PUBLIC
+    "${CMAKE_CURRENT_SOURCE_DIR}/src"
+)
+
+# 创建测试可执行文件
+add_executable(run_tests
+    ${TEST_SOURCES}
+)
+
+# 设置测试链接库
+target_link_libraries(run_tests PRIVATE
+    # 链接测试需要的库
+    gtest_main
+    RenderLib
+    # 其他测试依赖
+)
+
+# output dir
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 
 # # copy assets
 # add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
@@ -159,3 +196,8 @@ endif ()
 #         COMMAND ${CMAKE_COMMAND} -E copy
 #         ${THIRD_PARTY_DIR}/renderdoc/renderdoc.dll $<TARGET_FILE_DIR:${TARGET_NAME}>/renderdoc.dll
 #         )
+
+
+# 添加测试发现
+include(GoogleTest)
+gtest_discover_tests(run_tests)

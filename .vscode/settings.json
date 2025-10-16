@@ -1,7 +1,8 @@
 {
     "files.associations": {
         "cstring": "cpp",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "cmath": "cpp"
     },
     "cmake.cmakePath": "/usr/bin/cmake",
     "cmake.configureOnOpen": true,

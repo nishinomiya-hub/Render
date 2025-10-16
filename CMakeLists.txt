@@ -5,10 +5,10 @@ set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 set(CMAKE_CXX_STANDARD 17)
 
 set(TARGET_NAME Render)
-#set(THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/third_party")
+set(THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/third_party")
 
 # enable SIMD
-#add_definitions("-DSOFTGL_SIMD_OPT")
+add_definitions("-DSOFTGL_SIMD_OPT")
 
 # debug
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -22,7 +22,7 @@ include(FetchContent)
 # 下载并配置 Google Test
 FetchContent_Declare(
   googletest
-  GIT_REPOSITORY https://github.com/google/googletest.git
+  GIT_REPOSITORY https://gitee.com/mirrors/googletest.git
   GIT_TAG main
 )
 FetchContent_MakeAvailable(googletest)
@@ -37,7 +37,7 @@ FetchContent_MakeAvailable(googletest)
 include_directories(
         # "${THIRD_PARTY_DIR}/glfw/include"
         # "${THIRD_PARTY_DIR}/glad/include"
-        # "${THIRD_PARTY_DIR}/glm"
+        "${THIRD_PARTY_DIR}/glm"
         # "${THIRD_PARTY_DIR}/assimp/include"
         # "${THIRD_PARTY_DIR}/assimp/contrib"
         # "${THIRD_PARTY_DIR}/imgui"
@@ -94,11 +94,6 @@ file(GLOB SOFTGL_SRC
 #         ${THIRD_PARTY_DIR}/imgui/imgui/*.cpp
 #         )
 
-# 收集测试源文件
-file(GLOB TEST_SOURCES
-    tests/*.cpp
-    # 添加其他测试文件
-)
 
 add_library(RenderLib STATIC ${SOFTGL_SRC})
 
@@ -166,21 +161,51 @@ target_include_directories(RenderLib PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}/src"
 )
 
-# 创建测试可执行文件
-add_executable(run_tests
-    ${TEST_SOURCES}
+# 收集测试源文件
+file(GLOB TEST_SOURCES
+    tests/*.cpp
+    # 添加其他测试文件
 )
 
-# 设置测试链接库
-target_link_libraries(run_tests PRIVATE
-    # 链接测试需要的库
-    gtest_main
-    RenderLib
-    # 其他测试依赖
-)
+include(GoogleTest)
+# 为每个测试文件创建单独的可执行文件
+foreach(test_source ${TEST_SOURCES})
+    # 获取不带扩展名的文件名
+    get_filename_component(test_name ${test_source} NAME_WE)
+    
+    # 为每个测试创建独立的可执行文件
+    add_executable(${test_name} ${test_source})
+    
+    # 链接必要的库
+    target_link_libraries(${test_name} PRIVATE
+        gtest_main
+        RenderLib
+    )
+    
+    # 设置输出目录
+    set_target_properties(${test_name} PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin/tests
+    )
+    
+    # 添加到测试（可选，如果你还想用ctest运行）
+    gtest_discover_tests(${test_name})
+endforeach()
 
 # output dir
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+
+# 同时保留原来的所有测试集合（可选）
+if(TEST_SOURCES)
+    add_executable(run_all_tests ${TEST_SOURCES})
+    target_link_libraries(run_all_tests PRIVATE
+        gtest_main
+        RenderLib
+    )
+    set_target_properties(run_all_tests PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin/tests
+    )
+    gtest_discover_tests(run_all_tests)
+endif()
 
 # # copy assets
 # add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
@@ -197,7 +222,3 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 #         ${THIRD_PARTY_DIR}/renderdoc/renderdoc.dll $<TARGET_FILE_DIR:${TARGET_NAME}>/renderdoc.dll
 #         )
 
-
-# 添加测试发现
-include(GoogleTest)
-gtest_discover_tests(run_tests)

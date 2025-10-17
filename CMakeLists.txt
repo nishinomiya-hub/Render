@@ -42,7 +42,7 @@ include_directories(
         # "${THIRD_PARTY_DIR}/assimp/contrib"
         # "${THIRD_PARTY_DIR}/imgui"
         # "${THIRD_PARTY_DIR}/json11"
-        # "${THIRD_PARTY_DIR}/md5"
+        "${THIRD_PARTY_DIR}/md5"
         # "${THIRD_PARTY_DIR}/stb/include"
         # "${THIRD_PARTY_DIR}/vulkan/include"
         # "${THIRD_PARTY_DIR}/glslang"
@@ -95,14 +95,20 @@ file(GLOB SOFTGL_SRC
 #         )
 
 
-add_library(RenderLib STATIC ${SOFTGL_SRC})
+add_library(RenderLib STATIC 
+        "${SOFTGL_SRC}"
+        # "${IMGUI_SRC}"
+        # "${THIRD_PARTY_DIR}/glad/src/glad.c"
+        # "${THIRD_PARTY_DIR}/json11/json11.cpp"
+        "${THIRD_PARTY_DIR}/md5/md5.c"
+)
 
 add_executable(${TARGET_NAME}
         "${SOFTGL_SRC}"
         # "${IMGUI_SRC}"
         # "${THIRD_PARTY_DIR}/glad/src/glad.c"
         # "${THIRD_PARTY_DIR}/json11/json11.cpp"
-        # "${THIRD_PARTY_DIR}/md5/md5.c"
+        "${THIRD_PARTY_DIR}/md5/md5.c"
         )
 
 # set(LINK_LIBS
@@ -158,7 +164,20 @@ endif ()
 #target_link_libraries(${TARGET_NAME} ${LINK_LIBS})
 
 target_include_directories(RenderLib PUBLIC
-    "${CMAKE_CURRENT_SOURCE_DIR}/src"
+        # "${THIRD_PARTY_DIR}/glfw/include"
+        # "${THIRD_PARTY_DIR}/glad/include"
+        "${THIRD_PARTY_DIR}/glm"
+        # "${THIRD_PARTY_DIR}/assimp/include"
+        # "${THIRD_PARTY_DIR}/assimp/contrib"
+        # "${THIRD_PARTY_DIR}/imgui"
+        # "${THIRD_PARTY_DIR}/json11"
+        "${THIRD_PARTY_DIR}/md5"
+        # "${THIRD_PARTY_DIR}/stb/include"
+        # "${THIRD_PARTY_DIR}/vulkan/include"
+        # "${THIRD_PARTY_DIR}/glslang"
+        # "${THIRD_PARTY_DIR}/vma"
+        # "${THIRD_PARTY_DIR}/renderdoc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src"
 )
 
 # 收集测试源文件

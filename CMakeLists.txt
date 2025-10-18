@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project(Render)
 
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 set(TARGET_NAME Render)
 set(THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/third_party")
@@ -43,7 +43,7 @@ include_directories(
         # "${THIRD_PARTY_DIR}/imgui"
         # "${THIRD_PARTY_DIR}/json11"
         "${THIRD_PARTY_DIR}/md5"
-        # "${THIRD_PARTY_DIR}/stb/include"
+        "${THIRD_PARTY_DIR}/stb/include"
         # "${THIRD_PARTY_DIR}/vulkan/include"
         # "${THIRD_PARTY_DIR}/glslang"
         # "${THIRD_PARTY_DIR}/vma"
@@ -172,7 +172,7 @@ target_include_directories(RenderLib PUBLIC
         # "${THIRD_PARTY_DIR}/imgui"
         # "${THIRD_PARTY_DIR}/json11"
         "${THIRD_PARTY_DIR}/md5"
-        # "${THIRD_PARTY_DIR}/stb/include"
+        "${THIRD_PARTY_DIR}/stb/include"
         # "${THIRD_PARTY_DIR}/vulkan/include"
         # "${THIRD_PARTY_DIR}/glslang"
         # "${THIRD_PARTY_DIR}/vma"

@@ -80,7 +80,7 @@ include_directories(
 file(GLOB SOFTGL_SRC
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Base/*.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Render/*.cpp
-        # ${CMAKE_CURRENT_SOURCE_DIR}/src/Render/Software/*.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Render/Soft/*.cpp
         # ${CMAKE_CURRENT_SOURCE_DIR}/src/Render/OpenGL/*.cpp
         # ${CMAKE_CURRENT_SOURCE_DIR}/src/Render/Vulkan/*.cpp
         # ${CMAKE_CURRENT_SOURCE_DIR}/src/Render/Vulkan/SPIRV/*.cpp

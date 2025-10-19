@@ -5,7 +5,7 @@ namespace Learn {
 template<typename T>
 class UID {
  public:
-  UID() : uuid_(uidCounter_++) {}
+  UID() : uid_(uidCounter_++) {}
 
   inline int get() const {
     return uid_;

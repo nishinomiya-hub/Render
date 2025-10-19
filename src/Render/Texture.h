@@ -23,8 +23,8 @@ namespace Learn
         Filter_NEAREST,
         Filter_LINEAR,
         Filter_NEAREST_MIPMAP_NEAREST,
-        Filter_NEAREST_MIPMAP_LINEAR,
         Filter_LINEAR_MIPMAP_NEAREST,
+        Filter_NEAREST_MIPMAP_LINEAR,
         Filter_LINEAR_MIPMAP_LINEAR,
     };
 

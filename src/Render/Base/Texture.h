@@ -3,8 +3,8 @@
 #include <string>
 #include <memory>
 #include <vector>
-#include "Base/Buffer.h"
-#include "Base/GLM_Header.h"
+#include "Utils/Buffer.h"
+#include "Utils/GLM_Header.h"
 
 // Texture基类
 

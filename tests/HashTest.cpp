@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "Base/Hash.h"
+#include "Utils/Hash.h"
 #include <unordered_set>
 
 namespace Learn {

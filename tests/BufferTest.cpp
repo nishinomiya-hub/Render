@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <memory>
 #include <cstring>
-#include "Base/Buffer.h"
+#include "Utils/Buffer.h"
 
 // 假设这是测试用的像素类型
 struct TestPixel {

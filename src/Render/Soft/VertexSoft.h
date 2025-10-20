@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Base/UID.h"
-#include "Render/Vertex.h"
+#include "Utils/UID.h"
+#include "Render/Base/Vertex.h"
 
 namespace Learn
 {

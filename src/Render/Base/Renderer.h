@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Base/Buffer.h"
+#include "Utils/Buffer.h"
 #include "Framebuffer.h"
 #include "ShaderProgram.h"
 #include "Texture.h"

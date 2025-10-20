@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "Render/Texture.h"
+#include "Render/Base/Texture.h"
 #include "Render/Soft/TextureSoft.h"
 
 namespace Learn {

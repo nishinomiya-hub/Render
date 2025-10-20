@@ -2,9 +2,9 @@
 
 #include <fstream>
 
-#include "Base/UID.h"
-#include "Base/Image.h"
-#include "Render/Texture.h"
+#include "Utils/UID.h"
+#include "Utils/Image.h"
+#include "Render/Base/Texture.h"
 
 namespace Learn
 {

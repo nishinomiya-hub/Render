@@ -129,10 +129,7 @@ namespace Learn
     }
 
     template <typename T>
-    T BaseSampler<T>::textureImpl(TextureImageSoft<T> *tex,
-                                  glm::vec2 &uv,
-                                  float lod,
-                                  glm::ivec2 offset)
+    T BaseSampler<T>::textureImpl(TextureImageSoft<T> *tex,glm::vec2 &uv,float lod,glm::ivec2 offset)
     {
         if (tex != nullptr && !tex->empty())
         {
@@ -194,4 +191,322 @@ namespace Learn
         }
         return T(0);
     }
+
+    template <typename T>
+    T BaseSampler<T>::pixelWithWrapMode(Buffer<T> *buffer, int x, int y, WrapMode wrap, T border)
+    {
+        int w = buffer->getWidth();
+        int h = buffer->getHeight();
+        switch (wrap)
+        {
+        case Wrap_REPEAT:
+        {
+            x = CoordMod(x, w);
+            y = CoordMod(y, h);
+            break;
+        }
+        case Wrap_MIRRORED_REPEAT:
+        {
+            x = CoordMod(x, 2 * w);
+            y = CoordMod(y, 2 * h);
+
+            x -= w;
+            y -= h;
+
+            x = CoordMirror(x);
+            y = CoordMirror(y);
+
+            x = w - 1 - x;
+            y = h - 1 - y;
+            break;
+        }
+        case Wrap_CLAMP_TO_EDGE:
+        {
+            if (x < 0)
+                x = 0;
+            if (x >= w)
+                x = w - 1;
+            if (y < 0)
+                y = 0;
+            if (y >= h)
+                y = h - 1;
+            break;
+        }
+        case Wrap_CLAMP_TO_BORDER:
+        {
+            if (x < 0 || x >= w)
+                return border;
+            if (y < 0 || y >= h)
+                return border;
+            break;
+        }
+        }
+        T *ptr = buffer->get(x, y);
+        if (ptr)
+            return *ptr;
+        return T(0);
+    }
+
+    template <typename T>
+    T BaseSampler<T>::sampleNearest(Buffer<T> *buffer, glm::vec2 &uv, WrapMode wrap, glm::ivec2 &offset, T border)
+    {
+        glm::vec2 texUV = uv * glm::vec2(buffer->getWidth(), buffer->getHeight());
+        auto x = glm::floor(texUV.x) + offset.x;
+        auto y = glm::floor(texUV.y) + offset.y;
+
+        return pixelWithWrapMode(buffer, x, y, wrap, border);
+    }
+
+    template <typename T>
+    T BaseSampler<T>::sampleBilinear(Buffer<T> *buffer, glm::vec2 &uv, WrapMode wrap, glm::ivec2 &offset, T border)
+    {
+        glm::vec2 texUV = uv * glm::vec2(buffer->getWidth(), buffer->getHeight());
+        texUV.x += (float)offset.x;
+        texUV.y += (float)offset.y;
+        return samplePixelBilinear(buffer, texUV, wrap, border);
+    }
+
+    template <typename T>
+    void BaseSampler<T>::sampleBufferBilinear(Buffer<T> *dst, Buffer<T> *src, T border)
+    {
+        float ratio_x = (float)src->getWidth() / (float)dst->getWidth();
+        float ratio_y = (float)src->getHeight() / (float)dst->getHeight();
+        glm::vec2 delta = glm::vec2(ratio_x, ratio_y) * 0.5f;
+        for (int y = 0; y < dst->getHeight(); y++)
+        {
+            for (int x = 0; x < dst->getWidth(); x++)
+            {
+                glm::vec2 uv = glm::vec2(x, y) * glm::vec2(ratio_x, ratio_y) + delta;
+                auto color = samplePixelBilinear(src, uv, Wrap_CLAMP_TO_BORDER, glm::ivec2(0, 0), border);
+                dst->set(x, y, color);
+            }
+        }
+    }
+
+    template <typename T>
+    T BaseSampler<T>::samplePixelBilinear(Buffer<T> *buffer, glm::vec2 uv, WrapMode wrap, T border)
+    {
+        auto x = glm::floor(uv.x - 0.5f);
+        auto y = glm::floor(uv.y - 0.5f);
+
+        auto s1 = pixelWithWrapMode(buffer, x, y, wrap, border);
+        auto s2 = pixelWithWrapMode(buffer, x + 1, y, wrap, border);
+        auto s3 = pixelWithWrapMode(buffer, x, y + 1, wrap, border);
+        auto s4 = pixelWithWrapMode(buffer, x + 1, y + 1, wrap, border);
+
+        glm::vec2 f = glm::fract(uv - glm::vec2(0.5f));
+        return glm::mix(glm::mix(s1, s2, f.x), glm::mix(s3, s4, f.x), f.y);
+    }
+
+    template <typename T>
+    class BaseSamplerCube : public BaseSampler<T>
+    {
+    private:
+        TextureImageSoft<T> *texes_[6] = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
+
+    public:
+        BaseSamplerCube()
+        {
+            BaseSampler<T>::wrapMode_ = Wrap_CLAMP_TO_EDGE;
+            BaseSampler<T>::filterMode_ = Filter_LINEAR;
+        }
+        inline void serImage(TextureImageSoft<T> *tex, int idx)
+        {
+            texes_[idx] = tex;
+            if (idx == 0)
+            {
+                BaseSampler<T>::width_ = (tex == nullptr) ? 0 : tex->getWidth();
+                BaseSampler<T>::height_ = (tex == nullptr) ? 0 : tex->getHeight();
+                BaseSampler<T>::useMipmaps = BaseSampler<T>::filterMode_ > Filter_LINEAR;
+            }
+        }
+        inline bool empty() override
+        {
+            return texes_[0] == nullptr;
+        }
+        static void convertXYZ2UV(float x, float y, float z, int *index, float *u, float *v);
+        T textureCubeLodImpl(glm::vec3 &coord, float lod = 0.f)
+        {
+            int index;
+            glm::vec2 uv;
+            convertXYZ2UV(coord.x, coord.y, coord.z, &index, &uv.x, &uv.y);
+            TextureImageSoft<T> *tex = texes_[index];
+            return BaseSampler<T>::textureImpl(tex, uv, lod);
+        }
+
+        T textureCubeImpl(glm::vec3 &coord, float bias = 0.f)
+        {
+            float lod = bias;
+            // cube sampler derivative not support
+            // lod += dFd()...
+            return textureCubeLodImpl(coord, lod);
+        }
+    };
+
+    template <typename T>
+    void BaseSamplerCube<T>::convertXYZ2UV(float x, float y, float z, int *index, float *u, float *v)
+    {
+        // Ref: https://en.wikipedia.org/wiki/Cube_mapping
+        float absX = std::fabs(x);
+        float absY = std::fabs(y);
+        float absZ = std::fabs(z);
+
+        bool isXPositive = x > 0;
+        bool isYPositive = y > 0;
+        bool isZPositive = z > 0;
+
+        float maxAxis, uc, vc;
+
+        // POSITIVE X
+        if (isXPositive && absX >= absY && absX >= absZ)
+        {
+            maxAxis = absX;
+            uc = -z;
+            vc = y;
+            *index = 0;
+        }
+        // NEGATIVE X
+        if (!isXPositive && absX >= absY && absX >= absZ)
+        {
+            maxAxis = absX;
+            uc = z;
+            vc = y;
+            *index = 1;
+        }
+        // POSITIVE Y
+        if (isYPositive && absY >= absX && absY >= absZ)
+        {
+            maxAxis = absY;
+            uc = x;
+            vc = -z;
+            *index = 2;
+        }
+        // NEGATIVE Y
+        if (!isYPositive && absY >= absX && absY >= absZ)
+        {
+            maxAxis = absY;
+            uc = x;
+            vc = z;
+            *index = 3;
+        }
+        // POSITIVE Z
+        if (isZPositive && absZ >= absX && absZ >= absY)
+        {
+            maxAxis = absZ;
+            uc = x;
+            vc = y;
+            *index = 4;
+        }
+        // NEGATIVE Z
+        if (!isZPositive && absZ >= absX && absZ >= absY)
+        {
+            maxAxis = absZ;
+            uc = -x;
+            vc = y;
+            *index = 5;
+        }
+
+        // flip y
+        vc = -vc;
+
+        // Convert range from -1 to 1 to 0 to 1
+        *u = 0.5f * (uc / maxAxis + 1.0f);
+        *v = 0.5f * (vc / maxAxis + 1.0f);
+    }
+
+    class SamplerSoft
+    {
+    public:
+        virtual TextureType texType() = 0;
+        virtual void setTexture(const std::shared_ptr<Texture> &tex) = 0;
+    };
+
+    template <typename T>
+    class Sampler2DSoft : public SamplerSoft
+    {
+    private:
+        BaseSampler2D<T> sampler_;
+        TextureSoft<T> *tex_ = nullptr;
+
+    public:
+        TextureType texType() override
+        {
+            return TextureType_2D;
+        }
+
+        void setTexture(const std::shared_ptr<Texture> &tex) override
+        {
+            tex_ = dynamic_cast<TextureSoft<T> *>(tex.get());
+            tex_->getBorderColor(sampler_.borderColor());
+            sampler_.setFilterMode(tex_->getSamplerDesc().filterMin);
+            sampler_.setWrapMode(tex_->getSamplerDesc().wrapS);
+            sampler_.setImage(&tex_->getImage());
+        }
+
+        inline TextureSoft<T> *getTexture() const
+        {
+            return tex_;
+        }
+
+        inline void setLodFunc(std::function<float(BaseSampler<T> *)> *func)
+        {
+            sampler_.setLodFunc(func);
+        }
+
+        inline T texture2D(glm::vec2 coord, float bias = 0.f)
+        {
+            return sampler_.texture2DImpl(coord, bias);
+        }
+
+        inline T texture2DLod(glm::vec2 coord, float lod = 0.f)
+        {
+            return sampler_.texture2DLodImpl(coord, lod);
+        }
+
+        inline T texture2DLodOffset(glm::vec2 coord, float lod, glm::ivec2 offset)
+        {
+            return sampler_.texture2DLodImpl(coord, lod, offset);
+        }
+    };
+
+    template <typename T>
+    class SamplerCubeSoft : public SamplerSoft
+    {
+    private:
+        BaseSamplerCube<T> sampler_;
+        TextureSoft<T> *tex_ = nullptr;
+
+    public:
+        TextureType texType() override
+        {
+            return TextureType_CUBE;
+        }
+
+        void setTexture(const std::shared_ptr<Texture> &tex) override
+        {
+            tex_ = dynamic_cast<TextureSoft<T> *>(tex.get());
+            tex_->getBorderColor(sampler_.borderColor());
+            sampler_.setFilterMode(tex_->getSamplerDesc().filterMin);
+            sampler_.setWrapMode(tex_->getSamplerDesc().wrapS);
+            for (int i = 0; i < 6; i++)
+            {
+                sampler_.setImage(&tex_->getImage((CubeMapFace)i), i);
+            }
+        }
+
+        inline TextureSoft<T> *getTexture() const
+        {
+            return tex_;
+        }
+
+        inline T textureCube(glm::vec3 coord, float bias = 0.f)
+        {
+            return sampler_.textureCubeImpl(coord, bias);
+        }
+
+        inline T textureCubeLod(glm::vec3 coord, float lod = 0.f)
+        {
+            return sampler_.textureCubeLodImpl(coord, lod);
+        }
+    };
 }

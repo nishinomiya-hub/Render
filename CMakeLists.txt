@@ -35,8 +35,8 @@ FetchContent_MakeAvailable(googletest)
 # endif (CCACHE)
 
 include_directories(
-        # "${THIRD_PARTY_DIR}/glfw/include"
-        # "${THIRD_PARTY_DIR}/glad/include"
+        "${THIRD_PARTY_DIR}/glfw/include"
+        "${THIRD_PARTY_DIR}/glad/include"
         "${THIRD_PARTY_DIR}/glm"
         # "${THIRD_PARTY_DIR}/assimp/include"
         # "${THIRD_PARTY_DIR}/assimp/contrib"
@@ -81,10 +81,10 @@ file(GLOB SOFTGL_SRC
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Utils/*.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Render/Base/*.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Render/Soft/*.cpp
-        # ${CMAKE_CURRENT_SOURCE_DIR}/src/Render/OpenGL/*.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Render/OpenGL/*.cpp
         # ${CMAKE_CURRENT_SOURCE_DIR}/src/Render/Vulkan/*.cpp
         # ${CMAKE_CURRENT_SOURCE_DIR}/src/Render/Vulkan/SPIRV/*.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Context/*.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Viewer/*.cpp
         # ${CMAKE_CURRENT_SOURCE_DIR}/src/Viewer/Shader/GLSL/*.cpp
         # ${CMAKE_CURRENT_SOURCE_DIR}/src/Viewer/Shader/Software/*.cpp
         )
@@ -98,7 +98,7 @@ file(GLOB SOFTGL_SRC
 add_library(RenderLib STATIC 
         "${SOFTGL_SRC}"
         # "${IMGUI_SRC}"
-        # "${THIRD_PARTY_DIR}/glad/src/glad.c"
+        "${THIRD_PARTY_DIR}/glad/src/glad.c"
         # "${THIRD_PARTY_DIR}/json11/json11.cpp"
         "${THIRD_PARTY_DIR}/md5/md5.c"
 )
@@ -106,7 +106,7 @@ add_library(RenderLib STATIC
 add_executable(${TARGET_NAME}
         "${SOFTGL_SRC}"
         # "${IMGUI_SRC}"
-        # "${THIRD_PARTY_DIR}/glad/src/glad.c"
+        "${THIRD_PARTY_DIR}/glad/src/glad.c"
         # "${THIRD_PARTY_DIR}/json11/json11.cpp"
         "${THIRD_PARTY_DIR}/md5/md5.c"
         )
@@ -118,22 +118,22 @@ add_executable(${TARGET_NAME}
 #         # SPIRV
 #         )
 
-# if (WIN32)
-#     set(LINK_LIBS ${LINK_LIBS}
-#             "${THIRD_PARTY_DIR}/vulkan/lib-win-x64/vulkan-1.lib"
-#             )
-#     if (MSVC)
-#         set(LINK_LIBS ${LINK_LIBS}
-#                 "${THIRD_PARTY_DIR}/glfw/lib-vc2022/glfw3.lib"
-#                 "${THIRD_PARTY_DIR}/glfw/lib-vc2022/glfw3dll.lib"
-#                 )
-#     else ()
-#         set(LINK_LIBS ${LINK_LIBS}
-#                 "${THIRD_PARTY_DIR}/glfw/lib-mingw-w64/libglfw3.a"
-#                 "${THIRD_PARTY_DIR}/glfw/lib-mingw-w64/libglfw3dll.a"
-#                 )
-#     endif ()
-# endif ()
+if (WIN32)
+    # set(LINK_LIBS ${LINK_LIBS}
+    #         "${THIRD_PARTY_DIR}/vulkan/lib-win-x64/vulkan-1.lib"
+    #         )
+    if (MSVC)
+        set(LINK_LIBS ${LINK_LIBS}
+                "${THIRD_PARTY_DIR}/glfw/lib-vc2022/glfw3.lib"
+                "${THIRD_PARTY_DIR}/glfw/lib-vc2022/glfw3dll.lib"
+                )
+    else ()
+        set(LINK_LIBS ${LINK_LIBS}
+                "${THIRD_PARTY_DIR}/glfw/lib-mingw-w64/libglfw3.a"
+                "${THIRD_PARTY_DIR}/glfw/lib-mingw-w64/libglfw3dll.a"
+                )
+    endif ()
+endif ()
 
 # if (APPLE)
 #     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -framework Cocoa -framework OpenGL -framework IOKit")
@@ -144,16 +144,17 @@ add_executable(${TARGET_NAME}
 #             )
 # endif ()
 
-# if (UNIX AND NOT APPLE)
-#     find_package(OpenGL REQUIRED)
-#     set(LINK_LIBS ${LINK_LIBS}
-#             pthread
-#             glfw
-#             OpenGL::GL
-#             "${THIRD_PARTY_DIR}/vulkan/lib-linux-x64/libvulkan.so.1"
-#             ${CMAKE_DL_LIBS}
-#             )
-# endif ()
+if (UNIX AND NOT APPLE)
+    set(OpenGL_GL_PREFERENCE "LEGACY")
+    find_package(OpenGL REQUIRED)
+    set(LINK_LIBS ${LINK_LIBS}
+            pthread
+            glfw
+            OpenGL::GL
+            #"${THIRD_PARTY_DIR}/vulkan/lib-linux-x64/libvulkan.so.1"
+            ${CMAKE_DL_LIBS}
+            )
+endif ()
 
 if (MSVC)
     target_compile_options(${TARGET_NAME} PRIVATE $<$<BOOL:${MSVC}>:/arch:AVX2 /std:c++17>)
@@ -161,11 +162,11 @@ else ()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mavx2 -mfma -O3")
 endif ()
 
-#target_link_libraries(${TARGET_NAME} ${LINK_LIBS})
+target_link_libraries(${TARGET_NAME} ${LINK_LIBS})
 
 target_include_directories(RenderLib PUBLIC
-        # "${THIRD_PARTY_DIR}/glfw/include"
-        # "${THIRD_PARTY_DIR}/glad/include"
+        "${THIRD_PARTY_DIR}/glfw/include"
+        "${THIRD_PARTY_DIR}/glad/include"
         "${THIRD_PARTY_DIR}/glm"
         # "${THIRD_PARTY_DIR}/assimp/include"
         # "${THIRD_PARTY_DIR}/assimp/contrib"

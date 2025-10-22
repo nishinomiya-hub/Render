@@ -29,7 +29,6 @@ namespace Learn
         float *varyings = nullptr;
 
         int clipMask = 0;
-        int clipMask = 0;
         glm::aligned_vec4 clipPos = glm::vec4(0.f); // clip space position
         glm::aligned_vec4 fragPos = glm::vec4(0.f); // screen space position
 

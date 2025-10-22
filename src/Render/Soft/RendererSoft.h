@@ -3,7 +3,7 @@
 #include "RendererInternal.h"
 #include "Utils/Geometry.h"
 #include "Utils/ThreadPool.h"
-#include "Base/Renderer.h"
+#include "Render/Base/Renderer.h"
 #include "VertexSoft.h"
 #include "FrameBufferSoft.h"
 

@@ -834,7 +834,7 @@ namespace Learn
             for (int blockX = 0; blockX < blockCntX; blockX++)
             {
 #ifdef RASTER_MULTI_THREAD
-                threadPool_.pushTask([&, vert, bounds, blockSize, blockX, blockY](int thread_id)
+                threadPool_.pushTaskWithThreadId([&, vert, bounds, blockSize, blockX, blockY](int thread_id)
                                      {
                                          // init pixel quad
                                          auto pixelQuad = threadQuadCtx_[thread_id];
@@ -1026,7 +1026,7 @@ namespace Learn
             auto *rowSrc = srcPtr + row * fboColor_->width;
             auto *rowDst = dstPtr + row * fboColor_->width;
 #ifdef RASTER_MULTI_THREAD
-            threadPool_.pushTask([&, rowSrc, rowDst](int thread_id)
+            threadPool_.pushTaskWithThreadId([&, rowSrc, rowDst](int thread_id)
                                  {
 #endif
                                      auto *src = rowSrc;
@@ -1273,10 +1273,10 @@ namespace Learn
 
         bool simd_enabled = false;
 #ifdef SOFTGL_SIMD_OPT
-        if ((PTR_ADDR(inVar0) % SOFTGL_ALIGNMENT == 0) &&
-            (PTR_ADDR(inVar1) % SOFTGL_ALIGNMENT == 0) &&
-            (PTR_ADDR(inVar2) % SOFTGL_ALIGNMENT == 0) &&
-            (PTR_ADDR(varsOut) % SOFTGL_ALIGNMENT == 0))
+        if ((PTR_ADDR(inVar0) % ALIGNED_MEMORY_ALIGNMENT == 0) &&
+            (PTR_ADDR(inVar1) % ALIGNED_MEMORY_ALIGNMENT == 0) &&
+            (PTR_ADDR(inVar2) % ALIGNED_MEMORY_ALIGNMENT == 0) &&
+            (PTR_ADDR(varsOut) % ALIGNED_MEMORY_ALIGNMENT == 0))
         {
             simd_enabled = true;
         }

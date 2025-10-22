@@ -12,7 +12,11 @@
         "random": "cpp",
         "bitset": "cpp",
         "algorithm": "cpp",
-        "format": "cpp"
+        "format": "cpp",
+        "memory": "cpp",
+        "optional": "cpp",
+        "any": "cpp",
+        "future": "cpp"
     },
     "cmake.cmakePath": "/usr/bin/cmake",
     "cmake.configureOnOpen": true,

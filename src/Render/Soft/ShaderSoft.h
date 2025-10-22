@@ -105,7 +105,7 @@ namespace Learn
             return ret / 255.f;
         }
 
-        static inline glm::vec4 textureLodOffset(Sampler2DSoft<RGBA> *sampler, glm::vec2 coord, float lod = 0.f, glm::ivec2 offset)
+        static inline glm::vec4 textureLodOffset(Sampler2DSoft<RGBA> *sampler, glm::vec2 coord, float lod , glm::ivec2 offset)
         {
             glm::vec4 ret = sampler->texture2DLodOffset(coord, lod, offset);
             return ret / 255.f;

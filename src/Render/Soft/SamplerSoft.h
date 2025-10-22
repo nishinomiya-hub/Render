@@ -277,7 +277,7 @@ namespace Learn
             for (int x = 0; x < dst->getWidth(); x++)
             {
                 glm::vec2 uv = glm::vec2(x, y) * glm::vec2(ratio_x, ratio_y) + delta;
-                auto color = samplePixelBilinear(src, uv, Wrap_CLAMP_TO_BORDER, glm::ivec2(0, 0), border);
+                auto color = samplePixelBilinear(src, uv, Wrap_CLAMP_TO_BORDER, border);
                 dst->set(x, y, color);
             }
         }
@@ -310,7 +310,7 @@ namespace Learn
             BaseSampler<T>::wrapMode_ = Wrap_CLAMP_TO_EDGE;
             BaseSampler<T>::filterMode_ = Filter_LINEAR;
         }
-        inline void serImage(TextureImageSoft<T> *tex, int idx)
+        inline void setImage(TextureImageSoft<T> *tex, int idx)
         {
             texes_[idx] = tex;
             if (idx == 0)
@@ -455,7 +455,7 @@ namespace Learn
 
         inline T texture2D(glm::vec2 coord, float bias = 0.f)
         {
-            return sampler_.texture2DImpl(coord, bias);
+            return sampler_.texutre2DImpl(coord, bias);
         }
 
         inline T texture2DLod(glm::vec2 coord, float lod = 0.f)

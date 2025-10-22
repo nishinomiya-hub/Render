@@ -16,8 +16,8 @@ namespace Learn
         {
             /* data */
             glm::vec3 a_position;
-            glm::vec3 a_normal;
             glm::vec2 a_texCoord;
+            glm::vec3 a_normal;
             glm::vec3 a_tangent;
         };
 

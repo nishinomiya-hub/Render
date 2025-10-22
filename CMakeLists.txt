@@ -40,8 +40,8 @@ include_directories(
         "${THIRD_PARTY_DIR}/glm"
         # "${THIRD_PARTY_DIR}/assimp/include"
         # "${THIRD_PARTY_DIR}/assimp/contrib"
-        # "${THIRD_PARTY_DIR}/imgui"
-        # "${THIRD_PARTY_DIR}/json11"
+        "${THIRD_PARTY_DIR}/imgui"
+        "${THIRD_PARTY_DIR}/json11"
         "${THIRD_PARTY_DIR}/md5"
         "${THIRD_PARTY_DIR}/stb/include"
         # "${THIRD_PARTY_DIR}/vulkan/include"
@@ -86,28 +86,28 @@ file(GLOB SOFTGL_SRC
         # ${CMAKE_CURRENT_SOURCE_DIR}/src/Render/Vulkan/SPIRV/*.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Viewer/*.cpp
         # ${CMAKE_CURRENT_SOURCE_DIR}/src/Viewer/Shader/GLSL/*.cpp
-        # ${CMAKE_CURRENT_SOURCE_DIR}/src/Viewer/Shader/Software/*.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Viewer/Shader/Software/*.cpp
         )
 
-# imgui src
-# file(GLOB IMGUI_SRC
-#         ${THIRD_PARTY_DIR}/imgui/imgui/*.cpp
-#         )
+#imgui src
+file(GLOB IMGUI_SRC
+        ${THIRD_PARTY_DIR}/imgui/imgui/*.cpp
+        )
 
 
 add_library(RenderLib STATIC 
         "${SOFTGL_SRC}"
-        # "${IMGUI_SRC}"
+        "${IMGUI_SRC}"
         "${THIRD_PARTY_DIR}/glad/src/glad.c"
-        # "${THIRD_PARTY_DIR}/json11/json11.cpp"
+        "${THIRD_PARTY_DIR}/json11/json11.cpp"
         "${THIRD_PARTY_DIR}/md5/md5.c"
 )
 
 add_executable(${TARGET_NAME}
         "${SOFTGL_SRC}"
-        # "${IMGUI_SRC}"
+        "${IMGUI_SRC}"
         "${THIRD_PARTY_DIR}/glad/src/glad.c"
-        # "${THIRD_PARTY_DIR}/json11/json11.cpp"
+        "${THIRD_PARTY_DIR}/json11/json11.cpp"
         "${THIRD_PARTY_DIR}/md5/md5.c"
         )
 
@@ -170,8 +170,8 @@ target_include_directories(RenderLib PUBLIC
         "${THIRD_PARTY_DIR}/glm"
         # "${THIRD_PARTY_DIR}/assimp/include"
         # "${THIRD_PARTY_DIR}/assimp/contrib"
-        # "${THIRD_PARTY_DIR}/imgui"
-        # "${THIRD_PARTY_DIR}/json11"
+        "${THIRD_PARTY_DIR}/imgui"
+        "${THIRD_PARTY_DIR}/json11"
         "${THIRD_PARTY_DIR}/md5"
         "${THIRD_PARTY_DIR}/stb/include"
         # "${THIRD_PARTY_DIR}/vulkan/include"
@@ -227,18 +227,18 @@ if(TEST_SOURCES)
     gtest_discover_tests(run_all_tests)
 endif()
 
-# # copy assets
-# add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
-#         COMMAND ${CMAKE_COMMAND} -E copy_directory
-#         ${CMAKE_CURRENT_SOURCE_DIR}/assets $<TARGET_FILE_DIR:${TARGET_NAME}>/assets
+# copy assets
+add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_CURRENT_SOURCE_DIR}/assets $<TARGET_FILE_DIR:${TARGET_NAME}>/assets
 
-#         COMMAND ${CMAKE_COMMAND} -E copy_directory
-#         ${CMAKE_CURRENT_SOURCE_DIR}/src/Viewer/Shader/GLSL $<TARGET_FILE_DIR:${TARGET_NAME}>/shaders/GLSL
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Viewer/Shader/GLSL $<TARGET_FILE_DIR:${TARGET_NAME}>/shaders/GLSL
 
-#         COMMAND ${CMAKE_COMMAND} -E copy_directory
-#         ${CMAKE_CURRENT_SOURCE_DIR}/cache $<TARGET_FILE_DIR:${TARGET_NAME}>/cache
+        # COMMAND ${CMAKE_COMMAND} -E copy_directory
+        # ${CMAKE_CURRENT_SOURCE_DIR}/cache $<TARGET_FILE_DIR:${TARGET_NAME}>/cache
 
-#         COMMAND ${CMAKE_COMMAND} -E copy
-#         ${THIRD_PARTY_DIR}/renderdoc/renderdoc.dll $<TARGET_FILE_DIR:${TARGET_NAME}>/renderdoc.dll
-#         )
+        # COMMAND ${CMAKE_COMMAND} -E copy
+        # ${THIRD_PARTY_DIR}/renderdoc/renderdoc.dll $<TARGET_FILE_DIR:${TARGET_NAME}>/renderdoc.dll
+        )
 

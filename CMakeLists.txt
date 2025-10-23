@@ -27,12 +27,12 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(googletest)
 
-# find_program(CCACHE "ccache")
-# if (CCACHE)
-#     message(STATUS "find ccache")
-#     set(CMAKE_C_COMPILER_LAUNCHER ${CCACHE})
-#     set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE})
-# endif (CCACHE)
+find_program(CCACHE "ccache")
+if (CCACHE)
+    message(STATUS "find ccache")
+    set(CMAKE_C_COMPILER_LAUNCHER ${CCACHE})
+    set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE})
+endif (CCACHE)
 
 include_directories(
         "${THIRD_PARTY_DIR}/glfw/include"
@@ -112,7 +112,7 @@ add_executable(${TARGET_NAME}
         )
 
 # set(LINK_LIBS
-#         #assimp
+#         assimp
 #         #glslang
 #         # glslang-default-resource-limits
 #         # SPIRV
@@ -235,8 +235,8 @@ add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Viewer/Shader/GLSL $<TARGET_FILE_DIR:${TARGET_NAME}>/shaders/GLSL
 
-        # COMMAND ${CMAKE_COMMAND} -E copy_directory
-        # ${CMAKE_CURRENT_SOURCE_DIR}/cache $<TARGET_FILE_DIR:${TARGET_NAME}>/cache
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_CURRENT_SOURCE_DIR}/cache $<TARGET_FILE_DIR:${TARGET_NAME}>/cache
 
         # COMMAND ${CMAKE_COMMAND} -E copy
         # ${THIRD_PARTY_DIR}/renderdoc/renderdoc.dll $<TARGET_FILE_DIR:${TARGET_NAME}>/renderdoc.dll

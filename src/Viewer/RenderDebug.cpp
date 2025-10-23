@@ -50,7 +50,7 @@ namespace Learn
 
             if (module == nullptr)
             {
-                LOGE("load %s failed!", RENDER_DOC_LIBRARY);
+                LOG_ERROR("load %s failed!", RENDER_DOC_LIBRARY);
                 return nullptr;
             }
 
@@ -59,13 +59,13 @@ namespace Learn
 
             if (getApi == nullptr)
             {
-                LOGE("GetProcAddress '%s' failed!", RENDER_DOC_FUNC_GetAPI);
+                LOG_ERROR("GetProcAddress '%s' failed!", RENDER_DOC_FUNC_GetAPI);
                 return nullptr;
             }
 
             if (getApi(eRENDERDOC_API_Version_1_0_0, (void **)&rdoc) != 1)
             {
-                LOGE("RenderDoc call getApi failed!");
+                LOG_ERROR("RenderDoc call getApi failed!");
                 return nullptr;
             }
 #endif

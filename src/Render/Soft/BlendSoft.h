@@ -45,9 +45,9 @@ namespace Learn
         case BlendFunction::REVERSE_SUBTRACT:
             return dst - src;
         case BlendFunction::MIN:
-            return std::min(src, dst);
+            return glm::min(src, dst);
         case BlendFunction::MAX:
-            return std::max(src, dst);
+            return glm::max(src, dst);
         }
         return src + dst;
     }

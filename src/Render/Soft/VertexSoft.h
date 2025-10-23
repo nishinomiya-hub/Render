@@ -17,6 +17,7 @@ namespace Learn
 
     private:
         UID<VertexArrayObjectSoft> uid_;
+    public:
         explicit VertexArrayObjectSoft(const VertexArray &vertexArray)
         {
             vertexStride = vertexArray.vertexesDesc[0].stride;

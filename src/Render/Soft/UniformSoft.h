@@ -8,9 +8,9 @@ namespace Learn
 {
     class UniformBlockSoft : public UniformBlock
     {
-    public:
     private:
         std::vector<uint8_t> buffer_;
+    public:
         UniformBlockSoft(const std::string &name, int size) : UniformBlock(name, size)
         {
             buffer_.resize(size);

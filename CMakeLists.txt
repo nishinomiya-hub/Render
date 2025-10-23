@@ -38,8 +38,8 @@ include_directories(
         "${THIRD_PARTY_DIR}/glfw/include"
         "${THIRD_PARTY_DIR}/glad/include"
         "${THIRD_PARTY_DIR}/glm"
-        # "${THIRD_PARTY_DIR}/assimp/include"
-        # "${THIRD_PARTY_DIR}/assimp/contrib"
+        "${THIRD_PARTY_DIR}/assimp/include"
+        "${THIRD_PARTY_DIR}/assimp/contrib"
         "${THIRD_PARTY_DIR}/imgui"
         "${THIRD_PARTY_DIR}/json11"
         "${THIRD_PARTY_DIR}/md5"
@@ -47,23 +47,23 @@ include_directories(
         # "${THIRD_PARTY_DIR}/vulkan/include"
         # "${THIRD_PARTY_DIR}/glslang"
         # "${THIRD_PARTY_DIR}/vma"
-        # "${THIRD_PARTY_DIR}/renderdoc"
+        "${THIRD_PARTY_DIR}/renderdoc"
         "${CMAKE_CURRENT_SOURCE_DIR}/src"
 )
 
 # # assimp
-# set(BUILD_SHARED_LIBS OFF)
-# set(ASSIMP_NO_EXPORT ON)
-# set(ASSIMP_BUILD_TESTS OFF)
-# set(ASSIMP_INSTALL OFF)
-# set(ASSIMP_BUILD_ASSIMP_TOOLS OFF)
-# set(ASSIMP_BUILD_ZLIB ON)
+set(BUILD_SHARED_LIBS OFF)
+set(ASSIMP_NO_EXPORT ON)
+set(ASSIMP_BUILD_TESTS OFF)
+set(ASSIMP_INSTALL OFF)
+set(ASSIMP_BUILD_ASSIMP_TOOLS OFF)
+set(ASSIMP_BUILD_ZLIB ON)
 
-# set(ASSIMP_BUILD_ALL_IMPORTERS_BY_DEFAULT FALSE)
-# set(ASSIMP_BUILD_OBJ_IMPORTER TRUE)
-# set(ASSIMP_BUILD_GLTF_IMPORTER TRUE)
+set(ASSIMP_BUILD_ALL_IMPORTERS_BY_DEFAULT FALSE)
+set(ASSIMP_BUILD_OBJ_IMPORTER TRUE)
+set(ASSIMP_BUILD_GLTF_IMPORTER TRUE)
 
-# add_subdirectory(${THIRD_PARTY_DIR}/assimp)
+add_subdirectory(${THIRD_PARTY_DIR}/assimp)
 
 
 # # glslang
@@ -111,12 +111,12 @@ add_executable(${TARGET_NAME}
         "${THIRD_PARTY_DIR}/md5/md5.c"
         )
 
-# set(LINK_LIBS
-#         assimp
-#         #glslang
-#         # glslang-default-resource-limits
-#         # SPIRV
-#         )
+set(LINK_LIBS
+        assimp
+        #glslang
+        # glslang-default-resource-limits
+        # SPIRV
+        )
 
 if (WIN32)
     # set(LINK_LIBS ${LINK_LIBS}
@@ -168,8 +168,8 @@ target_include_directories(RenderLib PUBLIC
         "${THIRD_PARTY_DIR}/glfw/include"
         "${THIRD_PARTY_DIR}/glad/include"
         "${THIRD_PARTY_DIR}/glm"
-        # "${THIRD_PARTY_DIR}/assimp/include"
-        # "${THIRD_PARTY_DIR}/assimp/contrib"
+        "${THIRD_PARTY_DIR}/assimp/include"
+        "${THIRD_PARTY_DIR}/assimp/contrib"
         "${THIRD_PARTY_DIR}/imgui"
         "${THIRD_PARTY_DIR}/json11"
         "${THIRD_PARTY_DIR}/md5"
@@ -177,7 +177,7 @@ target_include_directories(RenderLib PUBLIC
         # "${THIRD_PARTY_DIR}/vulkan/include"
         # "${THIRD_PARTY_DIR}/glslang"
         # "${THIRD_PARTY_DIR}/vma"
-        # "${THIRD_PARTY_DIR}/renderdoc"
+        "${THIRD_PARTY_DIR}/renderdoc"
         "${CMAKE_CURRENT_SOURCE_DIR}/src"
 )
 
@@ -238,7 +238,7 @@ add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_CURRENT_SOURCE_DIR}/cache $<TARGET_FILE_DIR:${TARGET_NAME}>/cache
 
-        # COMMAND ${CMAKE_COMMAND} -E copy
-        # ${THIRD_PARTY_DIR}/renderdoc/renderdoc.dll $<TARGET_FILE_DIR:${TARGET_NAME}>/renderdoc.dll
+        COMMAND ${CMAKE_COMMAND} -E copy
+        ${THIRD_PARTY_DIR}/renderdoc/renderdoc.dll $<TARGET_FILE_DIR:${TARGET_NAME}>/renderdoc.dll
         )
 

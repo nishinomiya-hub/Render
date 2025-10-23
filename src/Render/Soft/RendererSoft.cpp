@@ -48,7 +48,7 @@ namespace Learn
 
     std::shared_ptr<UniformBlock> RendererSoft::createUniformBlock(const std::string &name, int size)
     {
-        return std::make_shared<UniformBlock>(name, size);
+        return std::make_shared<UniformBlockSoft>(name, size);
     }
 
     std::shared_ptr<UniformSampler> RendererSoft::createUniformSampler(const std::string &name, const TextureDesc &desc)

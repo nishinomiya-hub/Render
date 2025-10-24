@@ -146,17 +146,17 @@ namespace Learn
                 skyboxTex.resize(6);
 
                 ThreadPool pool(6);
-                pool.pushTaskWithThreadId([&](int thread_id)
+                pool.pushTask([&](int thread_id)
                               { skyboxTex[0] = loadTextureFile(filepath + "right.jpg"); });
-                pool.pushTaskWithThreadId([&](int thread_id)
+                pool.pushTask([&](int thread_id)
                               { skyboxTex[1] = loadTextureFile(filepath + "left.jpg"); });
-                pool.pushTaskWithThreadId([&](int thread_id)
+                pool.pushTask([&](int thread_id)
                               { skyboxTex[2] = loadTextureFile(filepath + "top.jpg"); });
-                pool.pushTaskWithThreadId([&](int thread_id)
+                pool.pushTask([&](int thread_id)
                               { skyboxTex[3] = loadTextureFile(filepath + "bottom.jpg"); });
-                pool.pushTaskWithThreadId([&](int thread_id)
+                pool.pushTask([&](int thread_id)
                               { skyboxTex[4] = loadTextureFile(filepath + "front.jpg"); });
-                pool.pushTaskWithThreadId([&](int thread_id)
+                pool.pushTask([&](int thread_id)
                               { skyboxTex[5] = loadTextureFile(filepath + "back.jpg"); });
                 pool.waitTasksFinish();
 
@@ -539,7 +539,7 @@ namespace Learn
             ThreadPool pool(std::min(texPaths.size(), (size_t)std::thread::hardware_concurrency()));
             for (auto &path : texPaths)
             {
-                pool.pushTaskWithThreadId([&](int thread_id)
+                pool.pushTask([&](int thread_id)
                               { loadTextureFile(path); });
             }
         }

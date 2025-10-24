@@ -834,7 +834,7 @@ namespace Learn
             for (int blockX = 0; blockX < blockCntX; blockX++)
             {
 #ifdef RASTER_MULTI_THREAD
-                threadPool_.pushTaskWithThreadId([&, vert, bounds, blockSize, blockX, blockY](int thread_id)
+                threadPool_.pushTask([&, vert, bounds, blockSize, blockX, blockY](int thread_id)
                                      {
                                          // init pixel quad
                                          auto pixelQuad = threadQuadCtx_[thread_id];
@@ -1026,7 +1026,7 @@ namespace Learn
             auto *rowSrc = srcPtr + row * fboColor_->width;
             auto *rowDst = dstPtr + row * fboColor_->width;
 #ifdef RASTER_MULTI_THREAD
-            threadPool_.pushTaskWithThreadId([&, rowSrc, rowDst](int thread_id)
+            threadPool_.pushTask([&, rowSrc, rowDst](int thread_id)
                                  {
 #endif
                                      auto *src = rowSrc;

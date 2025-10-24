@@ -157,7 +157,7 @@ if (UNIX AND NOT APPLE)
 endif ()
 
 if (MSVC)
-    target_compile_options(${TARGET_NAME} PRIVATE $<$<BOOL:${MSVC}>:/arch:AVX2 /std:c++17>)
+    target_compile_options(${TARGET_NAME} PRIVATE $<$<BOOL:${MSVC}>:/arch:AVX2 /std:c++20>)
 else ()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mavx2 -mfma -O3")
 endif ()
@@ -180,6 +180,7 @@ target_include_directories(RenderLib PUBLIC
         "${THIRD_PARTY_DIR}/renderdoc"
         "${CMAKE_CURRENT_SOURCE_DIR}/src"
 )
+target_link_libraries(RenderLib PRIVATE ${LINK_LIBS})
 
 # 收集测试源文件
 file(GLOB TEST_SOURCES

@@ -188,57 +188,46 @@ file(GLOB TEST_SOURCES
 )
 
 include(GoogleTest)
-# 为每个测试文件创建单独的可执行文件
+
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/bin/Debug)
+else()
+    set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/bin/Release)
+endif()
+
+add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_CURRENT_SOURCE_DIR}/assets ${EXECUTABLE_OUTPUT_PATH}/assets
+        
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Viewer/Shader/GLSL ${EXECUTABLE_OUTPUT_PATH}/shaders/GLSL
+        
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_CURRENT_SOURCE_DIR}/cache ${EXECUTABLE_OUTPUT_PATH}/cache
+        
+    COMMAND ${CMAKE_COMMAND} -E copy
+        ${THIRD_PARTY_DIR}/renderdoc/renderdoc.dll ${EXECUTABLE_OUTPUT_PATH}/renderdoc.dll
+)
+
+# 修改测试目标输出路径
 foreach(test_source ${TEST_SOURCES})
-    # 获取不带扩展名的文件名
     get_filename_component(test_name ${test_source} NAME_WE)
-    
-    # 为每个测试创建独立的可执行文件
     add_executable(${test_name} ${test_source})
+    target_link_libraries(${test_name} PRIVATE gtest_main RenderLib)
     
-    # 链接必要的库
-    target_link_libraries(${test_name} PRIVATE
-        gtest_main
-        RenderLib
-    )
-    
-    # 设置输出目录
+    # 设置测试输出目录
     set_target_properties(${test_name} PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin/tests
+        RUNTIME_OUTPUT_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}/tests
     )
-    
-    # 添加到测试（可选，如果你还想用ctest运行）
     gtest_discover_tests(${test_name})
 endforeach()
 
-# output dir
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/bin)
-
-# 同时保留原来的所有测试集合（可选）
+# 修改全局测试目标输出路径
 if(TEST_SOURCES)
     add_executable(run_all_tests ${TEST_SOURCES})
-    target_link_libraries(run_all_tests PRIVATE
-        gtest_main
-        RenderLib
-    )
+    target_link_libraries(run_all_tests PRIVATE gtest_main RenderLib)
     set_target_properties(run_all_tests PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin/tests
+        RUNTIME_OUTPUT_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}/tests
     )
     gtest_discover_tests(run_all_tests)
 endif()
-
-# copy assets
-add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_CURRENT_SOURCE_DIR}/assets $<TARGET_FILE_DIR:${TARGET_NAME}>/assets
-
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Viewer/Shader/GLSL $<TARGET_FILE_DIR:${TARGET_NAME}>/shaders/GLSL
-
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_CURRENT_SOURCE_DIR}/cache $<TARGET_FILE_DIR:${TARGET_NAME}>/cache
-
-        COMMAND ${CMAKE_COMMAND} -E copy
-        ${THIRD_PARTY_DIR}/renderdoc/renderdoc.dll $<TARGET_FILE_DIR:${TARGET_NAME}>/renderdoc.dll
-        )
-

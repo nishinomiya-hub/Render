@@ -31,7 +31,7 @@ namespace Learn{
                 addDefine(define);
             }
         }
-        virtual void bindUniform(ShaderResources & resources) {
+        virtual void bindResources(ShaderResources & resources) {
             for (auto &kv : resources.blocks) {
             bindUniform(*kv.second);
             }

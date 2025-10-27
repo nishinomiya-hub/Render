@@ -42,8 +42,8 @@ namespace Learn
                 viewers_[Renderer_Soft] = std::move(viewer_soft);
 
                 // viewer opengl
-                // auto viewer_opengl = std::make_shared<ViewerOpenGL>(*config_, *camera_);
-                // viewers_[Renderer_OPENGL] = std::move(viewer_opengl);
+                auto viewer_opengl = std::make_shared<ViewerOpenGL>(*config_, *camera_);
+                viewers_[Renderer_OpenGL] = std::move(viewer_opengl);
 
                 // // viewer vulkan
                 // auto viewer_vulkan = std::make_shared<ViewerVulkan>(*config_, *camera_);

@@ -24,7 +24,7 @@ namespace Learn
         {
             programGLSL_.addDefine(def);
         }
-        bool compileAndLink(const std::string &vsPath, const std::string &fsPath)
+        bool compileAndLinkFile(const std::string &vsPath, const std::string &fsPath)
         {
             return compileAndLink(File::readText(vsPath), File::readText(fsPath));
         }

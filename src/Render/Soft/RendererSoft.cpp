@@ -132,7 +132,7 @@ namespace Learn
         if (!resources)
             return;
         if (shaderProgram_)
-            shaderProgram_->bindUniform(*resources);
+            shaderProgram_->bindResources(* resources);
     }
 
     void RendererSoft::setPipelineStates(std::shared_ptr<PipelineStates> &states)

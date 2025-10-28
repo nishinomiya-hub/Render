@@ -6,7 +6,6 @@
 #include "ModelLoader.h"
 #include "ViewerSoftware.h"
 #include "ViewerOpenGL.h"
-#include "ViewerVulkan.h"
 #include "RenderDebug.h"
 
 namespace Learn
@@ -45,9 +44,6 @@ namespace Learn
                 auto viewer_opengl = std::make_shared<ViewerOpenGL>(*config_, *camera_);
                 viewers_[Renderer_OpenGL] = std::move(viewer_opengl);
 
-                // // viewer vulkan
-                // auto viewer_vulkan = std::make_shared<ViewerVulkan>(*config_, *camera_);
-                // viewers_[Renderer_Vulkan] = std::move(viewer_vulkan);
 
                 // model loader
                 modelLoader_ = std::make_shared<ModelLoader>(*config_);
